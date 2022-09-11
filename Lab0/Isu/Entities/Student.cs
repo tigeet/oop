@@ -1,7 +1,8 @@
 namespace Isu.Entities;
 
 using Isu.Models;
-public class Student {
+public class Student
+{
   private static int nextId = 0;
 
   private int studentId;
@@ -9,7 +10,8 @@ public class Student {
   private GroupName groupName;
   private CourseNumber courseNumber;
 
-  public Student(Group group, string name) {
+  public Student(Group group, string name)
+  {
     this.studentId = nextId;
     this.name = name;
     this.groupName = group.GetGroupName();
@@ -18,23 +20,28 @@ public class Student {
     Student.nextId++;
   }
 
-  public int GetStudentId() {
+  public int GetStudentId()
+  {
     return this.studentId;
   }
 
-  public string GetName() {
+  public string GetName()
+  {
     return this.name;
   }
 
-  public GroupName GetGroupName() {
+  public GroupName GetGroupName()
+  {
     return this.groupName;
   }
 
-  public CourseNumber GetCourseNumber() {
+  public CourseNumber GetCourseNumber()
+  {
     return this.courseNumber;
   }
 
-  public void SetGroup(Group group) {
+  public void SetGroup(Group group)
+  {
     this.groupName = group.GetGroupName();
   }
 }

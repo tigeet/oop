@@ -3,7 +3,8 @@ using Isu.Models;
 
 namespace Isu.Services;
 
-public interface IIsuService {
+public interface IIsuService
+{
   Group AddGroup(GroupName name);
   Student AddStudent(Group group, string name);
 
@@ -18,63 +19,75 @@ public interface IIsuService {
   void ChangeStudentGroup(Student student, Group newGroup);
 }
 
-
-public class IsuService : IIsuService {
+public class IsuService : IIsuService
+{
   private Dictionary<GroupName, Group> groups = new Dictionary<GroupName, Group>();
   private Dictionary<int, Student> students = new Dictionary<int, Student>();
-  private Dictionary<GroupName, int> groupCapacity = new Dictionary<GroupName, int>();
 
-  public Group AddGroup(GroupName name) {
+  public Group AddGroup(GroupName name)
+  {
     Group group = new Group(name);
-    this.groups.Add(name, group);
+    this.groups[name] = group;
     return group;
   }
 
-  public Student AddStudent(Group group, string name) {
+  public Student AddStudent(Group group, string name)
+  {
     Student student = new Student(group, name);
-    this.students.Add(student.GetStudentId(), student);
+    group.AddStudent();
+    this.students[student.GetStudentId()] = student;
     return student;
   }
 
-
-  // check once again
-  public void ChangeStudentGroup(Student student, Group newGroup) {
-    GroupName currentGroupName = student.GetGroupName();
-    GroupName nextGroupName = newGroup.GetGroupName();
-
-    if (this.groupCapacity.ContainsKey(nextGroupName)) {
-      this.groupCapacity[nextGroupName] = 0;
-    }
-
-    if (this.groupCapacity[nextGroupName] == newGroup.getMaxCapacity())
-      throw new Exception("Group " + newGroup.GetGroupName() + " already contains maximum amount of students");
-
-    groupCapacity[currentGroupName] = groupCapacity[currentGroupName] - 1;
-    groupCapacity[nextGroupName] = groupCapacity[nextGroupName] + 1;
+  public void ChangeStudentGroup(Student student, Group newGroup)
+  {
+    Group oldGroup = this.groups[student.GetGroupName()];
+    newGroup.AddStudent(); // Если группа заполнена, выкинет ошибку
+    oldGroup.RemoveStudent();
     student.SetGroup(newGroup);
   }
 
-  public Group? FindGroup(GroupName groupName) {
+  public Group? FindGroup(GroupName groupName)
+  {
+    if (this.groups.ContainsKey(groupName))
+      return this.groups[groupName];
+
+    return null;
+  }
+
+  public List<Group> FindGroups(CourseNumber courseNumber)
+  {
+    List<Group> foundGroups = (from g in this.groups.Values.ToArray() where g.GetCourseNumber() == courseNumber select g).ToList();
+    return foundGroups;
+  }
+
+  public Student? FindStudent(int id)
+  {
+    if (this.students.ContainsKey(id))
+      return this.students[id];
+
+    return null;
+  }
+
+  public List<Student> FindStudents(GroupName groupName)
+  {
+    List<Student> foundStudents = (from s in this.students.Values.ToArray() where s.GetGroupName().Equals(groupName) select s).ToList();
+    return foundStudents;
+  }
+
+  public List<Student> FindStudents(CourseNumber courseNumber)
+  {
+    List<Student> foundStudents = (from s in this.students.Values.ToArray() where s.GetCourseNumber() == courseNumber select s).ToList();
+    return foundStudents;
+  }
+
+  public Student GetStudent(int id)
+  {
     throw new NotImplementedException();
   }
 
-  public List<Group> FindGroups(CourseNumber courseNumber) {
-    throw new NotImplementedException();
-  }
-
-  public Student? FindStudent(int id) {
-    throw new NotImplementedException();
-  }
-
-  public List<Student> FindStudents(GroupName groupName) {
-    throw new NotImplementedException();
-  }
-
-  public List<Student> FindStudents(CourseNumber courseNumber) {
-    throw new NotImplementedException();
-  }
-
-  public Student GetStudent(int id) {
-    throw new NotImplementedException();
+  public Dictionary<GroupName, Group> GetGroups()
+  {
+    return this.groups;
   }
 }
