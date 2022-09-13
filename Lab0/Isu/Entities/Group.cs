@@ -1,42 +1,49 @@
-namespace Isu.Entities;
 using Isu.Models;
+
+namespace Isu.Entities;
 public class Group
 {
-  private static int nextId = 0;
-  private int maxCapacity = 20;
+    private static int nextId = 0; // TODO: change so tests work properly
+    private int maxCapacity = 20;
 
-  private GroupName groupName;
-  private int studentsAmount;
-  private CourseNumber courseNumber;
+    private GroupName groupName;
+    private CourseNumber courseNumber;
+    private List<int> students = new List<int>();
 
-  public Group(GroupName groupName)
-  {
-    this.groupName = groupName;
-    this.studentsAmount = 0;
-    this.courseNumber = new CourseNumber(groupName.GetGroupName());
-    Group.nextId++;
-  }
+    public Group(GroupName groupName)
+    {
+        this.groupName = groupName;
+        courseNumber = new CourseNumber(groupName.GetGroupName());
+        Group.nextId++;
+    }
 
-  public GroupName GetGroupName()
-  {
-    return this.groupName;
-  }
+    public GroupName GetGroupName()
+    {
+        return groupName;
+    }
 
-  public CourseNumber GetCourseNumber()
-  {
-    return this.courseNumber;
-  }
+    public CourseNumber GetCourseNumber()
+    {
+        return courseNumber;
+    }
 
-  public void AddStudent()
-  {
-    this.studentsAmount++;
+    public void AddStudent(int studentId)
+    {
+        if (students.Count == maxCapacity)
+            throw new Exception(); // TODO: extract to class
 
-    if (this.studentsAmount == this.maxCapacity)
-      throw new Exception(); // extract to class;
-  }
+        students.Add(studentId);
+    }
 
-  public void RemoveStudent()
-  {
-    this.studentsAmount--;
-  }
+    public void RemoveStudent(int studentId)
+    {
+        // TODO: Check if group contains student
+        students.Remove(studentId);
+    }
+
+    public List<int> GetStudentIds()
+    {
+        // TODO: return Readonly collection
+        return students;
+    }
 }

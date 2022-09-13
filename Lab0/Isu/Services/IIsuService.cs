@@ -1,93 +1,94 @@
 using Isu.Entities;
 using Isu.Models;
-
 namespace Isu.Services;
 
 public interface IIsuService
 {
-  Group AddGroup(GroupName name);
-  Student AddStudent(Group group, string name);
+    Group AddGroup(GroupName name);
+    Student AddStudent(Group group, string name);
 
-  Student GetStudent(int id);
-  Student? FindStudent(int id);
-  List<Student> FindStudents(GroupName groupName);
-  List<Student> FindStudents(CourseNumber courseNumber);
+    Student GetStudent(int id);
+    Student? FindStudent(int id);
+    List<Student> FindStudents(GroupName groupName);
+    List<Student> FindStudents(CourseNumber courseNumber);
 
-  Group? FindGroup(GroupName groupName);
-  List<Group> FindGroups(CourseNumber courseNumber);
+    Group? FindGroup(GroupName groupName);
+    List<Group> FindGroups(CourseNumber courseNumber);
 
-  void ChangeStudentGroup(Student student, Group newGroup);
+    void ChangeStudentGroup(Student student, Group newGroup);
 }
 
 public class IsuService : IIsuService
 {
-  private Dictionary<GroupName, Group> groups = new Dictionary<GroupName, Group>();
-  private Dictionary<int, Student> students = new Dictionary<int, Student>();
+    private Dictionary<GroupName, Group> groups = new Dictionary<GroupName, Group>();
+    private Dictionary<int, Student> students = new Dictionary<int, Student>();
 
-  public Group AddGroup(GroupName name)
-  {
-    Group group = new Group(name);
-    this.groups[name] = group;
-    return group;
-  }
+    public Group AddGroup(GroupName name)
+    {
+        var group = new Group(name);
+        groups[name] = group;
+        return group;
+    }
 
-  public Student AddStudent(Group group, string name)
-  {
-    Student student = new Student(group, name);
-    group.AddStudent();
-    this.students[student.GetStudentId()] = student;
-    return student;
-  }
+    public Student AddStudent(Group group, string name)
+    {
+        var student = new Student(group, name);
+        group.AddStudent(student.GetStudentId());
+        students[student.GetStudentId()] = student;
+        return student;
+    }
 
-  public void ChangeStudentGroup(Student student, Group newGroup)
-  {
-    Group oldGroup = this.groups[student.GetGroupName()];
-    newGroup.AddStudent(); // Если группа заполнена, выкинет ошибку
-    oldGroup.RemoveStudent();
-    student.SetGroup(newGroup);
-  }
+    public void ChangeStudentGroup(Student student, Group newGroup)
+    {
+        Group oldGroup = groups[student.GetGroupName()];
+        newGroup.AddStudent(student.GetStudentId());
+        oldGroup.RemoveStudent(student.GetStudentId());
+        student.SetGroup(newGroup);
+    }
 
-  public Group? FindGroup(GroupName groupName)
-  {
-    if (this.groups.ContainsKey(groupName))
-      return this.groups[groupName];
+    public Group? FindGroup(GroupName groupName)
+    {
+        if (groups.ContainsKey(groupName))
+            return groups[groupName];
 
-    return null;
-  }
+        return null;
+    }
 
-  public List<Group> FindGroups(CourseNumber courseNumber)
-  {
-    List<Group> foundGroups = (from g in this.groups.Values.ToArray() where g.GetCourseNumber() == courseNumber select g).ToList();
-    return foundGroups;
-  }
+    public List<Group> FindGroups(CourseNumber courseNumber)
+    {
+        var foundGroups = (from g in groups.Values.ToArray() where g.GetCourseNumber() == courseNumber select g).ToList();
+        return foundGroups;
+    }
 
-  public Student? FindStudent(int id)
-  {
-    if (this.students.ContainsKey(id))
-      return this.students[id];
+    public Student? FindStudent(int id)
+    {
+        if (students.ContainsKey(id))
+            return students[id];
 
-    return null;
-  }
+        return null;
+    }
 
-  public List<Student> FindStudents(GroupName groupName)
-  {
-    List<Student> foundStudents = (from s in this.students.Values.ToArray() where s.GetGroupName().Equals(groupName) select s).ToList();
-    return foundStudents;
-  }
+    public List<Student> FindStudents(GroupName groupName)
+    {
+        return new List<Student>(groups[groupName].GetStudentIds().Select<int, Student>(id => students[id]));
 
-  public List<Student> FindStudents(CourseNumber courseNumber)
-  {
-    List<Student> foundStudents = (from s in this.students.Values.ToArray() where s.GetCourseNumber() == courseNumber select s).ToList();
-    return foundStudents;
-  }
+        // List<Student> foundStudents = (from s in this.students.Values.ToArray() where s.GetGroupName().Equals(groupName) select s).ToList();
+        // return foundStudents;
+    }
 
-  public Student GetStudent(int id)
-  {
-    throw new NotImplementedException();
-  }
+    public List<Student> FindStudents(CourseNumber courseNumber)
+    {
+        var foundStudents = (from s in students.Values.ToArray() where s.GetCourseNumber() == courseNumber select s).ToList();
+        return foundStudents;
+    }
 
-  public Dictionary<GroupName, Group> GetGroups()
-  {
-    return this.groups;
-  }
+    public Student GetStudent(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Dictionary<GroupName, Group> GetGroups()
+    {
+        return groups;
+    }
 }

@@ -1,47 +1,47 @@
-namespace Isu.Entities;
-
 using Isu.Models;
+
+namespace Isu.Entities;
 public class Student
 {
-  private static int nextId = 0;
+    private static int nextId = 0;
 
-  private int studentId;
-  private string name;
-  private GroupName groupName;
-  private CourseNumber courseNumber;
+    private int studentId;
+    private string name;
+    private GroupName groupName;
+    private CourseNumber courseNumber;
 
-  public Student(Group group, string name)
-  {
-    this.studentId = nextId;
-    this.name = name;
-    this.groupName = group.GetGroupName();
-    this.courseNumber = group.GetCourseNumber();
+    public Student(Group group, string name)
+    {
+        studentId = nextId;
+        this.name = name;
+        groupName = group.GetGroupName();
+        courseNumber = group.GetCourseNumber();
 
-    Student.nextId++;
-  }
+        Student.nextId++;
+    }
 
-  public int GetStudentId()
-  {
-    return this.studentId;
-  }
+    public int GetStudentId()
+    {
+        return studentId;
+    }
 
-  public string GetName()
-  {
-    return this.name;
-  }
+    public string GetName()
+    {
+        return name;
+    }
 
-  public GroupName GetGroupName()
-  {
-    return this.groupName;
-  }
+    public GroupName GetGroupName()
+    {
+        return groupName;
+    }
 
-  public CourseNumber GetCourseNumber()
-  {
-    return this.courseNumber;
-  }
+    public CourseNumber GetCourseNumber()
+    {
+        return courseNumber;
+    }
 
-  public void SetGroup(Group group)
-  {
-    this.groupName = group.GetGroupName();
-  }
+    public void SetGroup(Group group)
+    {
+        groupName = group.GetGroupName();
+    }
 }
