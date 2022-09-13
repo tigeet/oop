@@ -71,9 +71,6 @@ public class IsuService : IIsuService
     public List<Student> FindStudents(GroupName groupName)
     {
         return new List<Student>(groups[groupName].GetStudentIds().Select<int, Student>(id => students[id]));
-
-        // List<Student> foundStudents = (from s in this.students.Values.ToArray() where s.GetGroupName().Equals(groupName) select s).ToList();
-        // return foundStudents;
     }
 
     public List<Student> FindStudents(CourseNumber courseNumber)
