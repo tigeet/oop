@@ -8,7 +8,7 @@ public class Group
 
     private GroupName groupName;
     private CourseNumber courseNumber;
-    private List<int> students = new List<int>();
+    private List<Student> students = new List<Student>();
 
     public Group(GroupName groupName)
     {
@@ -27,21 +27,21 @@ public class Group
         return courseNumber;
     }
 
-    public void AddStudent(int studentId)
+    public void AddStudent(Student student)
     {
         if (students.Count == maxCapacity)
             throw new Exception(); // TODO: extract to class
 
-        students.Add(studentId);
+        students.Add(student);
     }
 
-    public void RemoveStudent(int studentId)
+    public void RemoveStudent(Student student)
     {
         // TODO: Check if group contains student
-        students.Remove(studentId);
+        students.Remove(student);
     }
 
-    public List<int> GetStudentIds()
+    public List<Student> GetStudents()
     {
         // TODO: return Readonly collection
         return students;

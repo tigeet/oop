@@ -33,16 +33,16 @@ public class IsuService : IIsuService
     public Student AddStudent(Group group, string name)
     {
         var student = new Student(group, name);
-        group.AddStudent(student.GetStudentId());
+        group.AddStudent(student);
         students[student.GetStudentId()] = student;
         return student;
     }
 
     public void ChangeStudentGroup(Student student, Group newGroup)
     {
-        Group oldGroup = groups[student.GetGroupName()];
-        newGroup.AddStudent(student.GetStudentId());
-        oldGroup.RemoveStudent(student.GetStudentId());
+        Group oldGroup = groups[student.GetGroup().GetGroupName()];
+        newGroup.AddStudent(student);
+        oldGroup.RemoveStudent(student);
         student.SetGroup(newGroup);
     }
 
@@ -70,7 +70,7 @@ public class IsuService : IIsuService
 
     public List<Student> FindStudents(GroupName groupName)
     {
-        return new List<Student>(groups[groupName].GetStudentIds().Select<int, Student>(id => students[id]));
+        return new List<Student>(groups[groupName].GetStudents());
     }
 
     public List<Student> FindStudents(CourseNumber courseNumber)

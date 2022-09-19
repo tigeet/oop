@@ -3,18 +3,19 @@ using Isu.Models;
 namespace Isu.Entities;
 public class Student
 {
-    private static int nextId = 0;
+    private static int nextId = 100000;
 
     private int studentId;
     private string name;
-    private GroupName groupName;
+    private Group group;
+
     private CourseNumber courseNumber;
 
     public Student(Group group, string name)
     {
         studentId = nextId;
         this.name = name;
-        groupName = group.GetGroupName();
+        this.group = group;
         courseNumber = group.GetCourseNumber();
 
         Student.nextId++;
@@ -30,9 +31,9 @@ public class Student
         return name;
     }
 
-    public GroupName GetGroupName()
+    public Group GetGroup()
     {
-        return groupName;
+        return group;
     }
 
     public CourseNumber GetCourseNumber()
@@ -42,6 +43,6 @@ public class Student
 
     public void SetGroup(Group group)
     {
-        groupName = group.GetGroupName();
+        this.group = group;
     }
 }

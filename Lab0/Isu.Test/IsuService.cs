@@ -62,7 +62,7 @@ public class IsuService
         Assert.Contains(student, isuService.FindStudents(groupName1));
 
         // Assert student has group
-        Assert.Equal(group1, isuService.FindGroup(student.GetGroupName()));
+        Assert.Equal(group1, isuService.FindGroup(student.GetGroup().GetGroupName()));
     }
 
     [Fact]
