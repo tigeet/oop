@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Isu.Entities;
 using Isu.Models;
 namespace Isu.Services;
@@ -9,19 +10,21 @@ public interface IIsuService
 
     Student GetStudent(int id);
     Student? FindStudent(int id);
-    List<Student> FindStudents(GroupName groupName);
-    List<Student> FindStudents(CourseNumber courseNumber);
+    ReadOnlyCollection<Student> FindStudents(GroupName groupName);
+    ReadOnlyCollection<Student> FindStudents(CourseNumber courseNumber);
 
     Group? FindGroup(GroupName groupName);
-    List<Group> FindGroups(CourseNumber courseNumber);
+    ReadOnlyCollection<Group> FindGroups(CourseNumber courseNumber);
 
     void ChangeStudentGroup(Student student, Group newGroup);
+    void RemoveStudent(Student student);
 }
 
 public class IsuService : IIsuService
 {
     private Dictionary<GroupName, Group> groups = new Dictionary<GroupName, Group>();
     private Dictionary<int, Student> students = new Dictionary<int, Student>();
+    private StudentIdFactory studentIdFactory = new StudentIdFactory();
 
     public Group AddGroup(GroupName name)
     {
@@ -32,9 +35,11 @@ public class IsuService : IIsuService
 
     public Student AddStudent(Group group, string name)
     {
-        var student = new Student(group, name);
+        int studentId = studentIdFactory.GetNewId();
+        var student = new Student(group, name, studentId);
         group.AddStudent(student);
-        students[student.GetStudentId()] = student;
+        students[studentId] = student;
+        Console.WriteLine(studentId);
         return student;
     }
 
@@ -54,10 +59,10 @@ public class IsuService : IIsuService
         return null;
     }
 
-    public List<Group> FindGroups(CourseNumber courseNumber)
+    public ReadOnlyCollection<Group> FindGroups(CourseNumber courseNumber)
     {
         var foundGroups = (from g in groups.Values.ToArray() where g.GetCourseNumber() == courseNumber select g).ToList();
-        return foundGroups;
+        return new ReadOnlyCollection<Group>(foundGroups);
     }
 
     public Student? FindStudent(int id)
@@ -68,15 +73,15 @@ public class IsuService : IIsuService
         return null;
     }
 
-    public List<Student> FindStudents(GroupName groupName)
+    public ReadOnlyCollection<Student> FindStudents(GroupName groupName)
     {
-        return new List<Student>(groups[groupName].GetStudents());
+        return new ReadOnlyCollection<Student>(groups[groupName].GetStudents());
     }
 
-    public List<Student> FindStudents(CourseNumber courseNumber)
+    public ReadOnlyCollection<Student> FindStudents(CourseNumber courseNumber)
     {
         var foundStudents = (from s in students.Values.ToArray() where s.GetCourseNumber() == courseNumber select s).ToList();
-        return foundStudents;
+        return new ReadOnlyCollection<Student>(foundStudents);
     }
 
     public Student GetStudent(int id)
@@ -84,8 +89,15 @@ public class IsuService : IIsuService
         throw new NotImplementedException();
     }
 
-    public Dictionary<GroupName, Group> GetGroups()
+    public void RemoveStudent(Student student)
     {
-        return groups;
+        int id = student.GetStudentId();
+        if (students.ContainsKey(id))
+        {
+            students.Remove(id);
+            Group group = student.GetGroup();
+            group.RemoveStudent(student);
+            studentIdFactory.ReturnId(student);
+        }
     }
 }

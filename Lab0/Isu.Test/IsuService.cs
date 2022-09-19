@@ -1,4 +1,5 @@
 using Isu.Entities;
+using Isu.Exceptions;
 using Isu.Models;
 using Xunit;
 
@@ -6,6 +7,29 @@ namespace Isu.Test;
 public class IsuService
 {
     [Fact]
+    public void RemoveStudentWorks()
+    {
+        var isuService = new Isu.Services.IsuService();
+        var groupName1 = new GroupName("M3101");
+        Group group1 = isuService.AddGroup(groupName1);
+        Student student1 = isuService.AddStudent(group1, "name-1");
+        Student student2 = isuService.AddStudent(group1, "name-2");
+        Student student3 = isuService.AddStudent(group1, "name-3");
+        Assert.Contains(student1, isuService.FindStudents(groupName1));
+
+        isuService.RemoveStudent(student2);
+        isuService.RemoveStudent(student3);
+
+        Student student4 = isuService.AddStudent(group1, "name-4");
+        Student student5 = isuService.AddStudent(group1, "name-5");
+        Assert.Contains(student4, isuService.FindStudents(groupName1));
+        Assert.Contains(student5, isuService.FindStudents(groupName1));
+        Assert.DoesNotContain(student2, isuService.FindStudents(groupName1));
+        Assert.DoesNotContain(student3, isuService.FindStudents(groupName1));
+    }
+
+    [Fact]
+
     public void AddStudent_GetStudentWorks()
     {
         var isuService = new Isu.Services.IsuService();
@@ -80,20 +104,20 @@ public class IsuService
             isuService.AddStudent(group, "student#" + (i + 1));
         }
 
-        Assert.Throws<Exception>(() => isuService.AddStudent(group, "student#21")); // Add custom exception class
+        Assert.Throws<GroupOverflowException>(() => isuService.AddStudent(group, "student#21")); // Add custom exception class
     }
 
     [Fact]
     public void CreateGroupWithInvalidName_ThrowException()
     {
         // Incorrect length
-        Assert.Throws<Exception>(() => new GroupName("M31010000"));
+        Assert.Throws<GroupNameException>(() => new GroupName("M31010000"));
 
         // Incorrect Letter
-        Assert.Throws<Exception>(() => new GroupName("E3101"));
+        Assert.Throws<GroupNameException>(() => new GroupName("E3101"));
 
         // Incorrect course
-        Assert.Throws<Exception>(() => new GroupName("M3601"));
+        Assert.Throws<GroupNameException>(() => new GroupName("M3601"));
     }
 
     /*

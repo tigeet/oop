@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Isu.Exceptions;
 namespace Isu.Models;
 
 public class GroupName
@@ -20,6 +21,6 @@ public class GroupName
         const string pattern = @"^[ABCDFKLMNPRTUVWXYZ][3-5][1-5]\d\d\d?c?$";
         MatchCollection matches = Regex.Matches(groupName, pattern, RegexOptions.IgnorePatternWhitespace);
         if (matches.Count == 0)
-            throw new Exception(); // Extract to class
+            throw new GroupNameException();
     }
 }

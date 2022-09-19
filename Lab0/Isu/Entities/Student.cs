@@ -1,29 +1,25 @@
 using Isu.Models;
-
 namespace Isu.Entities;
+
 public class Student
 {
-    private static int nextId = 100000;
-
-    private int studentId;
+    private int id;
     private string name;
     private Group group;
 
     private CourseNumber courseNumber;
 
-    public Student(Group group, string name)
+    public Student(Group group, string name, int id)
     {
-        studentId = nextId;
         this.name = name;
         this.group = group;
+        this.id = id;
         courseNumber = group.GetCourseNumber();
-
-        Student.nextId++;
     }
 
     public int GetStudentId()
     {
-        return studentId;
+        return id;
     }
 
     public string GetName()
