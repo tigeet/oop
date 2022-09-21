@@ -39,7 +39,6 @@ public class IsuService : IIsuService
         var student = new Student(group, name, studentId);
         group.AddStudent(student);
         students[studentId] = student;
-        Console.WriteLine(studentId);
         return student;
     }
 
