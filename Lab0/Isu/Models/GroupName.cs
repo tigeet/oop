@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Isu.Exceptions;
 namespace Isu.Models;
 
@@ -7,20 +6,16 @@ public class GroupName
     private string groupName;
     public GroupName(string groupName)
     {
-        ValidateName(groupName);
+        if (!Utils.Utils.IsValidGroupName(groupName))
+        {
+            throw new GroupNameException();
+        }
+
         this.groupName = groupName;
     }
 
     public string GetGroupName()
     {
         return groupName;
-    }
-
-    private void ValidateName(string groupName)
-    {
-        const string pattern = @"^[ABCDFKLMNPRTUVWXYZ][3-5][1-5]\d\d\d?c?$";
-        MatchCollection matches = Regex.Matches(groupName, pattern, RegexOptions.IgnorePatternWhitespace);
-        if (matches.Count == 0)
-            throw new GroupNameException();
     }
 }

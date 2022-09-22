@@ -4,7 +4,7 @@ public class GroupNameException : Exception
 {
     private const string ErrorMessage = "Wrong group name signature";
     public GroupNameException()
-        : base("Wrong group name signature") { }
+        : base(ErrorMessage) { }
 
     public GroupNameException(string message)
             : base(message)

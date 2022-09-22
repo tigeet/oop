@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Isu.Exceptions;
 using Isu.Models;
 namespace Isu.Entities;
@@ -31,16 +30,27 @@ public class Group
         if (students.Count == maxCapacity)
             throw new GroupOverflowException(student, this);
 
+        if (students.Contains(student))
+            throw new StudentAlreadyInGroupException();
+
         students.Add(student);
     }
 
     public void RemoveStudent(Student student)
     {
+        if (!students.Contains(student))
+            throw new StudentNotInTheGroupException();
+
         students.Remove(student);
     }
 
-    public ReadOnlyCollection<Student> GetStudents()
+    public List<Student> GetStudents()
     {
-        return new ReadOnlyCollection<Student>(students);
+        return new List<Student>(students);
+    }
+
+    public int GetMaxCapacity()
+    {
+        return maxCapacity;
     }
 }
