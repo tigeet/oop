@@ -1,6 +1,5 @@
 using Isu.Entities;
 using Isu.Models;
-
 namespace Isu.Services;
 
 public interface IIsuService
@@ -17,4 +16,5 @@ public interface IIsuService
     List<Group> FindGroups(CourseNumber courseNumber);
 
     void ChangeStudentGroup(Student student, Group newGroup);
+    void RemoveStudent(Student student);
 }
