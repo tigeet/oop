@@ -1,5 +1,5 @@
 using Shops.Models;
-
+using Shops.Exceptions;
 namespace Shops.Entities;
 public class Shop
 {
@@ -27,7 +27,7 @@ public class Shop
         foreach (Supply supply in supplies)
         {
             if (!products.ContainsKey(supply.GetProductInfo()))
-                throw new Exception(); // TODO: Product not registered exception
+                throw new ProductNotRegisteredException(); // TODO: Product not registered exception
         }
 
         foreach (Supply supply in supplies)
@@ -43,7 +43,7 @@ public class Shop
         foreach (ProductInfo productInfo in productInfos)
         {
             if (products.ContainsKey(productInfo))
-                throw new Exception("Product is already registered"); // TODO: Product is already registered
+                throw new ProductAlreadyRegisteredException(); // TODO: Product is already registered
         }
 
         foreach (ProductInfo productInfo in productInfos)
@@ -62,18 +62,18 @@ public class Shop
             int amount = purchase.GetAmount();
 
             if (!products.ContainsKey(productInfo))
-                throw new Exception("product not registered"); // TODO: Product not registered
+                throw new ProductNotRegisteredException(); // TODO: Product not registered
 
             Product product = products[productInfo];
 
             if (product.GetCount() < amount)
-                throw new Exception("Not enough products"); // TODO: Not enough products
+                throw new NotEnoughProductsException(); // TODO: Not enough products
 
             total += product.GetPrice() * amount;
         }
 
         if (total > person.GetMoney())
-            throw new Exception("Not enough money"); // TODO: Not enough money
+            throw new NotEnoughMoneyException(); // TODO: Not enough money
 
         foreach (Purchase purchase in purchases)
         {
@@ -90,7 +90,7 @@ public class Shop
     public Product GetProduct(ProductInfo productInfo)
     {
         if (!products.ContainsKey(productInfo))
-            throw new Exception("Product does not exist"); // TODO: Product does not exist
+            throw new ProductDoesNotExistException(); // TODO: Product does not exist
 
         return products[productInfo];
     }

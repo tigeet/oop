@@ -1,5 +1,5 @@
+using Shops.Exceptions;
 using Shops.Models;
-
 namespace Shops.Entities;
 public class Product
 {
@@ -15,14 +15,19 @@ public class Product
 
     public void IncreaseCount(int amount)
     {
-        // TODO: Check if amount > 0
+        if (amount < 0)
+            throw new InvalidAmountException();
         count += amount;
     }
 
     public void DecreaseCount(int amount)
     {
-        // TODO: Check if amount > 0
-        // TODO: Check if count - amount >= 0
+      if (amount < 0) 
+        throw new InvalidAmountException();
+      
+      if (count - amount < 0)
+        throw new InvalidAmountException();
+
         count -= amount;
     }
 
