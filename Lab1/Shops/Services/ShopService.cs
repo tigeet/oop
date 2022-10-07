@@ -5,15 +5,39 @@ namespace Shops.Services;
 public class ShopService
 {
     private Dictionary<int, Shop> shops = new Dictionary<int, Shop>();
-    private int nextId = 0;
+    private Dictionary<int, string> products = new Dictionary<int, string>();
+    private ShopIdFactory shopIdFactory = new ShopIdFactory();
+    private ProductIdFactory productIdFactory = new ProductIdFactory();
     public ShopService() { }
 
-    public Shop CreateShop(string name, string address, params ProductInfo[] productInfos)
+    public Shop CreateShop(string name, string address)
     {
-        var shop = new Shop(nextId, name, address, productInfos);
-        shops[nextId] = shop;
-        nextId++;
+        int id = shopIdFactory.GetNextId();
+        var shop = new Shop(id, name, address);
+
+        foreach (int productId in new List<int>(products.Keys))
+        {
+            if (!shop.HasProduct(productId))
+                shop.RegisterProduct(new Product(productId, products[productId]));
+        }
+
+        shops[id] = shop;
         return shop;
+    }
+
+    public int RegisterProduct(string name)
+    {
+        int id = productIdFactory.GetNextId();
+        var shopsList = new List<Shop>(shops.Values);
+
+        foreach (Shop shop in shopsList)
+        {
+            var product = new Product(id, name);
+            shop.RegisterProduct(product);
+        }
+
+        products[id] = name;
+        return id;
     }
 
     public Shop? FindShopWithBestPrice(params Purchase[] purchases)
@@ -21,9 +45,7 @@ public class ShopService
         var shopsList = new List<Shop>(shops.Values);
 
         if (shopsList.Count() == 0)
-        {
             return null;
-        }
 
         decimal minPrice = decimal.MaxValue;
         Shop? minShop = null;
@@ -35,14 +57,14 @@ public class ShopService
             foreach (Purchase purchase in purchases)
             {
                 decimal amount = purchase.GetAmount();
-                ProductInfo productInfo = purchase.GetProductInfo();
-                if (!shop.HasProduct(productInfo))
+                int id = purchase.GetId();
+                if (!shop.HasProduct(id))
                 {
                     found = false;
                     break;
                 }
 
-                Product product = shop.GetProduct(productInfo);
+                Product product = shop.GetProduct(id);
 
                 if (product.GetCount() < amount)
                 {

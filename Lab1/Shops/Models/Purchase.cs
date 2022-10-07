@@ -1,20 +1,20 @@
-namespace Shops.Models;
 using Shops.Exceptions;
+
+namespace Shops.Models;
 public class Purchase
 {
-    private ProductInfo productInfo;
+    private int id;
     private int amount;
 
-    public Purchase(ProductInfo productInfo, int amount)
+    public Purchase(int id, int amount)
     {
         if (amount <= 0)
-            throw new InvalidAmountException(); // TODO: Invalid purchase amount
-
-        this.productInfo = productInfo;
+            throw new InvalidAmountException();
+        this.id = id;
         this.amount = amount;
     }
 
     public int GetAmount() { return amount; }
 
-    public ProductInfo GetProductInfo() { return productInfo; }
+    public int GetId() { return id; }
 }

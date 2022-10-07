@@ -1,18 +1,20 @@
 using Shops.Exceptions;
-using Shops.Models;
 namespace Shops.Entities;
 public class Product
 {
-    private ProductInfo productInfo;
+    private int id;
     private int count;
     private decimal price;
-    public Product(ProductInfo productInfo, int count, decimal price)
+    private string name;
+    public Product(int id, string name)
     {
-        this.productInfo = productInfo;
-        this.count = count;
-        this.price = price;
+        this.id = id;
+        this.name = name;
+        count = 0;
+        price = 0m;
     }
 
+    public int GetId() { return id; }
     public void IncreaseCount(int amount)
     {
         if (amount < 0)
@@ -22,11 +24,11 @@ public class Product
 
     public void DecreaseCount(int amount)
     {
-      if (amount < 0) 
-        throw new InvalidAmountException();
-      
-      if (count - amount < 0)
-        throw new InvalidAmountException();
+        if (amount < 0)
+            throw new InvalidAmountException();
+
+        if (count - amount < 0)
+            throw new InvalidAmountException();
 
         count -= amount;
     }
@@ -38,6 +40,9 @@ public class Product
 
     public void UpdatePrice(decimal newPrice)
     {
+        if (newPrice <= 0)
+            throw new InvalidPriceException();
+
         price = newPrice;
     }
 
@@ -46,8 +51,5 @@ public class Product
         return price;
     }
 
-    public ProductInfo GetProductInfo()
-    {
-        return productInfo;
-    }
+    public string GetName() { return name; }
 }
