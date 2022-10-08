@@ -1,10 +1,10 @@
 namespace Shops.Exceptions;
 public class ProductNotRegisteredException : Exception
 {
-    private const string ErrorMessage = "Product is not registered";
+    private const string _errorMessage = "Product is not registered";
 
     public ProductNotRegisteredException()
-        : base(ErrorMessage) { }
+        : base(_errorMessage) { }
 
     public ProductNotRegisteredException(string message)
             : base(message)

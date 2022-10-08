@@ -1,10 +1,10 @@
 namespace Shops.Exceptions;
 public class InvalidAmountException : Exception
 {
-    private const string ErrorMessage = "Invalid Amount";
+    private const string _errorMessage = "Invalid Amount";
 
     public InvalidAmountException()
-        : base(ErrorMessage) { }
+        : base(_errorMessage) { }
 
     public InvalidAmountException(string message)
             : base(message)

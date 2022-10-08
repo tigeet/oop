@@ -1,10 +1,10 @@
 namespace Shops.Exceptions;
 public class NotEnoughMoneyException : Exception
 {
-    private const string ErrorMessage = "Not enough money";
+    private const string _errorMessage = "Not enough money";
 
     public NotEnoughMoneyException()
-        : base(ErrorMessage) { }
+        : base(_errorMessage) { }
 
     public NotEnoughMoneyException(string message)
             : base(message)

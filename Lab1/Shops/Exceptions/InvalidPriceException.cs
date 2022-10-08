@@ -1,10 +1,10 @@
 namespace Shops.Exceptions;
 public class InvalidPriceException : Exception
 {
-    private const string ErrorMessage = "Invalid price";
+    private const string _errorMessage = "Invalid price";
 
     public InvalidPriceException()
-        : base(ErrorMessage) { }
+        : base(_errorMessage) { }
 
     public InvalidPriceException(string message)
             : base(message)

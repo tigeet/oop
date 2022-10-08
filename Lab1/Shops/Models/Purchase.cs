@@ -3,18 +3,14 @@ using Shops.Exceptions;
 namespace Shops.Models;
 public class Purchase
 {
-    private int id;
-    private int amount;
-
-    public Purchase(int id, int amount)
+    public Purchase(Product product, int amount)
     {
         if (amount <= 0)
             throw new InvalidAmountException();
-        this.id = id;
-        this.amount = amount;
+        Product = product;
+        Amount = amount;
     }
 
-    public int GetAmount() { return amount; }
-
-    public int GetId() { return id; }
+    public Product Product { get; }
+    public int Amount { get; }
 }

@@ -3,54 +3,54 @@ using Shops.Models;
 namespace Shops.Entities;
 public class Shop
 {
-    private Dictionary<int, Product> products;
-    private int id;
-    private string name;
-    private string address;
-
-    public Shop(int id, string name, string address)
+    private Dictionary<Product, ShopProduct> products;
+    public Shop(string name, string address)
     {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        products = new Dictionary<int, Product>();
+        Id = Guid.NewGuid();
+        Name = name;
+        Address = address;
+        products = new Dictionary<Product, ShopProduct>();
     }
 
-    public string GetName() { return name; }
-    public string GetAddress() { return address; }
-    public int GetId() { return id; }
+    public Guid Id { get; }
+    public string Name { get; }
+    public string Address { get; }
+
+    public string GetName() { return Name; }
+    public string GetAddress() { return Address; }
+    public Guid GetId() { return Id; }
 
     public void AddProducts(params Supply[] supplies)
     {
         foreach (Supply supply in supplies)
         {
-            if (!products.ContainsKey(supply.GetId()))
+            if (!products.ContainsKey(supply.Product))
                 throw new ProductNotRegisteredException();
         }
 
         foreach (Supply supply in supplies)
         {
-            Product product = products[supply.GetId()];
-            product.UpdatePrice(supply.GetPrice());
-            product.IncreaseCount(supply.GetCount());
+            ShopProduct product = products[supply.Product];
+            product.UpdatePrice(supply.Price);
+            product.IncreaseCount(supply.Count);
         }
     }
 
-    public void RegisterProduct(Product product)
+    public void RegisterProduct(ShopProduct shopProduct)
     {
-        int id = product.GetId();
-        if (products.ContainsKey(id))
+        Product? product = shopProduct.Product;
+        if (products.ContainsKey(product))
             throw new ProductAlreadyRegisteredException();
 
-        products[id] = product;
+        products[product] = shopProduct;
     }
 
-    public void ChangePrice(int id, decimal newPrice)
+    public void ChangePrice(Product product, decimal newPrice)
     {
-        if (!products.ContainsKey(id))
+        if (!products.ContainsKey(product))
             throw new ProductNotRegisteredException();
 
-        products[id].UpdatePrice(newPrice);
+        products[product].UpdatePrice(newPrice);
     }
 
     public void BuyProducts(Person person, params Purchase[] purchases)
@@ -58,52 +58,52 @@ public class Shop
         decimal total = 0m;
         foreach (Purchase purchase in purchases)
         {
-            int id = purchase.GetId();
-            int amount = purchase.GetAmount();
+            Product? product = purchase.Product;
+            int amount = purchase.Amount;
 
-            if (!products.ContainsKey(id))
+            if (!products.ContainsKey(product))
                 throw new ProductNotRegisteredException();
 
-            Product product = products[id];
+            ShopProduct shopProduct = products[product];
 
-            if (product.GetCount() < amount)
+            if (shopProduct.Count < amount)
                 throw new NotEnoughProductsException();
 
-            total += product.GetPrice() * amount;
+            total += shopProduct.Price * amount;
         }
 
-        if (total > person.GetMoney())
+        if (total > person.Money)
             throw new NotEnoughMoneyException();
 
         foreach (Purchase purchase in purchases)
         {
-            int id = purchase.GetId();
-            Product product = products[id];
-            int amount = purchase.GetAmount();
+            Product? product = purchase.Product;
+            ShopProduct shopProduct = products[product];
+            int amount = purchase.Amount;
 
-            product.DecreaseCount(amount);
+            shopProduct.DecreaseCount(amount);
         }
 
         person.DecreaseMoney(total);
     }
 
-    public Product GetProduct(int id)
+    public ShopProduct GetProduct(Product product)
     {
-        if (!products.ContainsKey(id))
+        if (!products.ContainsKey(product))
             throw new ProductDoesNotExistException();
 
-        return products[id];
+        return products[product];
     }
 
-    public bool HasProduct(int id)
+    public bool HasProduct(Product product)
     {
-        return products.ContainsKey(id);
+        return products.ContainsKey(product);
     }
 
-    public List<Product> GetProducts()
+    public List<ShopProduct> GetShopProducts()
     {
-        return new List<Product>(products.Values);
+        return new List<ShopProduct>(products.Values);
     }
 
-    public List<int> GetProductIds() { return new List<int>(products.Keys); }
+    public List<Product> GetProducts() { return new List<Product>(products.Keys); }
 }

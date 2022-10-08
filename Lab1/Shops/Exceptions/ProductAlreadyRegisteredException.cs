@@ -1,10 +1,10 @@
 namespace Shops.Exceptions;
 public class ProductAlreadyRegisteredException : Exception
 {
-    private const string ErrorMessage = "Product is already registered";
+    private const string _errorMessage = "Product is already registered";
 
     public ProductAlreadyRegisteredException()
-        : base(ErrorMessage) { }
+        : base(_errorMessage) { }
 
     public ProductAlreadyRegisteredException(string message)
             : base(message)

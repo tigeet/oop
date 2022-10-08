@@ -1,10 +1,10 @@
 namespace Shops.Exceptions;
 public class ProductDoesNotExistException : Exception
 {
-    private const string ErrorMessage = "Product does not exist";
+    private const string _errorMessage = "Product does not exist";
 
     public ProductDoesNotExistException()
-        : base(ErrorMessage) { }
+        : base(_errorMessage) { }
 
     public ProductDoesNotExistException(string message)
             : base(message)

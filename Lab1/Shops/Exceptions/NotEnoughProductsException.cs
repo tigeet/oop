@@ -1,10 +1,10 @@
 namespace Shops.Exceptions;
 public class NotEnoughProductsException : Exception
 {
-    private const string ErrorMessage = "Not enough products";
+    private const string _errorMessage = "Not enough products";
 
     public NotEnoughProductsException()
-        : base(ErrorMessage) { }
+        : base(_errorMessage) { }
 
     public NotEnoughProductsException(string message)
             : base(message)
