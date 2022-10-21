@@ -4,50 +4,50 @@ namespace Isu.Extra.Entities;
 
 public class Student
 {
-  private List<CourseFlow> _courses = new List<CourseFlow>();
-  public Student(Group group, string name)
-  {
-    Name = name;
-    Group = group;
-    Id = Guid.NewGuid();
-  }
-
-  public List<CourseFlow> Courses
-  {
-    get
+    private List<CourseFlow> _courses = new List<CourseFlow>();
+    public Student(Group group, string name)
     {
-      return new List<CourseFlow>(_courses);
+        Name = name;
+        Group = group;
+        Id = Guid.NewGuid();
     }
-  }
 
-  public Guid Id { get; }
-  public string Name { get; }
-  public Group Group { get; private set; }
+    public List<CourseFlow> Courses
+    {
+        get
+        {
+            return new List<CourseFlow>(_courses);
+        }
+    }
 
-  public void AddFlow(CourseFlow flow)
-  {
-    if (_courses.Contains(flow))
-      throw new StudentAlreadyAssignedException();
+    public Guid Id { get; }
+    public string Name { get; }
+    public Group Group { get; private set; }
 
-    if (_courses.Count == 2)
-      throw new TooManyFlowsException();
+    public void AddFlow(CourseFlow flow)
+    {
+        if (_courses.Contains(flow))
+            throw new StudentAlreadyAssignedException();
 
-    if (Group.Faculty.Letter == flow.Course.Faculty.Letter)
-      throw new SameFacultyException();
+        if (_courses.Count == 2)
+            throw new TooManyFlowsException();
 
-    _courses.Add(flow);
-  }
+        if (Group.Faculty.Letter == flow.Course.Faculty.Letter)
+            throw new SameFacultyException();
 
-  public void RemoveFlow(CourseFlow flow)
-  {
-    if (!_courses.Contains(flow))
-      throw new StudentNotAssignedException();
+        _courses.Add(flow);
+    }
 
-    _courses.Remove(flow);
-  }
+    public void RemoveFlow(CourseFlow flow)
+    {
+        if (!_courses.Contains(flow))
+            throw new StudentNotAssignedException();
 
-  public void ChangeGroup(Group group)
-  {
-    Group = group;
-  }
+        _courses.Remove(flow);
+    }
+
+    public void ChangeGroup(Group group)
+    {
+        Group = group;
+    }
 }

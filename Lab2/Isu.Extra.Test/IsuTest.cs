@@ -88,7 +88,8 @@ public class IsuService
         Group group = isuService.AddGroup(new GroupName("M32011"));
         group.AddInterval(new Lesson(new Time(13, 30), new Time(15, 00), group, "t1", 1));
         CourseFlow flow1 = course1.AddFlow(new Lesson(new Time(11, 40), new Time(13, 10), group, "t1", 1));
-        CourseFlow flow2 = course1.AddFlow(new Lesson(new Time(12, 00), new Time(13, 30), group, "t1", 1));
+        CourseFlow flow2 = course2.AddFlow(new Lesson(new Time(13, 00), new Time(14, 00), group, "t1", 1));
+        CourseFlow flow3 = course3.AddFlow(new Lesson(new Time(12, 00), new Time(13, 10), group, "t1", 1));
         Student student = isuService.AddStudent(group, "s1");
 
         course1.AddStudent(student);
@@ -97,8 +98,8 @@ public class IsuService
         course1.RemoveStudent(student);
         Assert.DoesNotContain(student, course1.Students);
 
-        Assert.Throws<Exception>(() => course2.AddStudent(student)); // Collision
-        Assert.Throws<Exception>(() => course3.AddStudent(student)); // Same faculty
+        Assert.Throws<NoSuitableFlowsException>(() => course2.AddStudent(student)); // Collision
+        Assert.Throws<SameFacultyException>(() => course3.AddStudent(student)); // Same faculty
     }
 
     [Fact]

@@ -1,85 +1,88 @@
-using Isu.Extra.Models;
 using Isu.Extra.Exceptions;
+using Isu.Extra.Models;
 namespace Isu.Extra.Entities;
 public class Course
 {
-  private List<CourseFlow> _flows = new List<CourseFlow>();
+    private List<CourseFlow> _flows = new List<CourseFlow>();
 
-  public Course(Faculty faculty)
-  {
-    MaxCapacity = 100;
-    Faculty = faculty;
-    Id = Guid.NewGuid();
-  }
-
-  public Guid Id { get; }
-  public Faculty Faculty { get; }
-  public List<CourseFlow> Flows { get { return new List<CourseFlow>(_flows); } }
-  public int MaxCapacity { get; }
-  public int Capacity { get; }
-
-  public List<Student> Students
-  {
-    get
+    public Course(Faculty faculty)
     {
-      var res = new List<Student>();
-      foreach (CourseFlow flow in _flows)
-      {
-        res.AddRange(flow.Students);
-      }
-
-      return res;
-    }
-  }
-
-  public CourseFlow AddFlow(params Lesson[] lessons)
-  {
-    var flow = new CourseFlow(this);
-    flow.AddInterval(lessons);
-    _flows.Add(flow);
-    return flow;
-  }
-
-  public void RemoveFlow(CourseFlow flow)
-  {
-    if (!_flows.Contains(flow))
-      throw new FlowDoesNotExistException();
-
-    _flows.Remove(flow);
-  }
-
-  public void AddStudent(Student student)
-  {
-    foreach (CourseFlow flow in _flows)
-    {
-      if (flow.IsFull)
-        continue;
-
-      flow.AddStudent(student);
-      student.AddFlow(flow);
-      return;
+        MaxCapacity = 100;
+        Faculty = faculty;
+        Id = Guid.NewGuid();
     }
 
-    throw new NoEmptyFlowsException();
-  }
+    public Guid Id { get; }
+    public Faculty Faculty { get; }
+    public List<CourseFlow> Flows { get { return new List<CourseFlow>(_flows); } }
+    public int MaxCapacity { get; }
+    public int Capacity { get; }
 
-  public void RemoveStudent(Student student)
-  {
-    foreach (CourseFlow flow in _flows)
+    public List<Student> Students
     {
-      if (!flow.Students.Contains(student))
-        continue;
+        get
+        {
+            var res = new List<Student>();
+            foreach (CourseFlow flow in _flows)
+            {
+                res.AddRange(flow.Students);
+            }
 
-      flow.RemoveStudent(student);
-      student.RemoveFlow(flow);
-      return;
+            return res;
+        }
     }
 
-    throw new StudentNotAssignedException();
-  }
+    public CourseFlow AddFlow(params Lesson[] lessons)
+    {
+        var flow = new CourseFlow(this);
+        flow.AddInterval(lessons);
+        _flows.Add(flow);
+        return flow;
+    }
 
-  public bool HasStudent(Student student)
-  {
-    return Students.Contains(student);
-  }
+    public void RemoveFlow(CourseFlow flow)
+    {
+        if (!_flows.Contains(flow))
+            throw new FlowDoesNotExistException();
+
+        _flows.Remove(flow);
+    }
+
+    public void AddStudent(Student student)
+    {
+        foreach (CourseFlow flow in _flows)
+        {
+            if (flow.IsFull)
+                continue;
+
+            if (flow.HasCollisions(student.Group))
+                continue;
+
+            flow.AddStudent(student);
+            student.AddFlow(flow);
+            return;
+        }
+
+        throw new NoSuitableFlowsException();
+    }
+
+    public void RemoveStudent(Student student)
+    {
+        foreach (CourseFlow flow in _flows)
+        {
+            if (!flow.Students.Contains(student))
+                continue;
+
+            flow.RemoveStudent(student);
+            student.RemoveFlow(flow);
+            return;
+        }
+
+        throw new StudentNotAssignedException();
+    }
+
+    public bool HasStudent(Student student)
+    {
+        return Students.Contains(student);
+    }
 }

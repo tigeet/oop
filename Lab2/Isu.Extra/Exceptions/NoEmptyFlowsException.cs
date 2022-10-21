@@ -1,19 +1,18 @@
-
 namespace Isu.Extra.Exceptions;
 
-public class NoEmptyFlowsException : Exception
+public class NoSuitableFlowsException : Exception
 {
-  private const string ErrorMessage = "no empty flows";
-  public NoEmptyFlowsException()
-      : base(ErrorMessage) { }
+    private const string ErrorMessage = "no suitable flows";
+    public NoSuitableFlowsException()
+        : base(ErrorMessage) { }
 
-  public NoEmptyFlowsException(string message)
-          : base(message)
-  {
-  }
+    public NoSuitableFlowsException(string message)
+            : base(message)
+    {
+    }
 
-  public NoEmptyFlowsException(string message, Exception inner)
-      : base(message, inner)
-  {
-  }
+    public NoSuitableFlowsException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
 }
