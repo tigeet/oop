@@ -1,6 +1,7 @@
 using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 namespace Isu.Extra.Entities;
+
 public class Course
 {
     private List<CourseFlow> _flows = new List<CourseFlow>();
@@ -14,21 +15,15 @@ public class Course
 
     public Guid Id { get; }
     public Faculty Faculty { get; }
-    public List<CourseFlow> Flows { get { return new List<CourseFlow>(_flows); } }
+    public IReadOnlyCollection<CourseFlow> Flows { get { return _flows; } }
     public int MaxCapacity { get; }
     public int Capacity { get; }
 
-    public List<Student> Students
+    public IReadOnlyCollection<StudentExtra> Students
     {
         get
         {
-            var res = new List<Student>();
-            foreach (CourseFlow flow in _flows)
-            {
-                res.AddRange(flow.Students);
-            }
-
-            return res;
+            return Flows.SelectMany(f => f.Students).ToList();
         }
     }
 
@@ -43,45 +38,40 @@ public class Course
     public void RemoveFlow(CourseFlow flow)
     {
         if (!_flows.Contains(flow))
-            throw new FlowDoesNotExistException();
+            throw new FlowException("flow does not exist");
 
         _flows.Remove(flow);
     }
 
-    public void AddStudent(Student student)
+    public void AddStudent(StudentExtra student)
     {
-        foreach (CourseFlow flow in _flows)
-        {
-            if (flow.IsFull)
-                continue;
+        if (Students.Contains(student))
+            throw new StudentException("student is already assigned to that course");
 
-            if (flow.HasCollisions(student.Group))
-                continue;
+        if (student.GroupExtra.Faculty.Letter == Faculty.Letter)
+            throw new FacultyException("student facutly matches course faculty");
 
-            flow.AddStudent(student);
-            student.AddFlow(flow);
-            return;
-        }
+        CourseFlow? flow = _flows.Where(f => !f.HasCollisions(student.GroupExtra)).Where(f => !f.IsFull).FirstOrDefault();
 
-        throw new NoSuitableFlowsException();
+        if (flow is null)
+         throw new FlowException("no suitable flow");
+
+        flow.AddStudent(student);
+        student.AddFlow(flow);
     }
 
-    public void RemoveStudent(Student student)
+    public void RemoveStudent(StudentExtra student)
     {
-        foreach (CourseFlow flow in _flows)
-        {
-            if (!flow.Students.Contains(student))
-                continue;
+        CourseFlow? flow = _flows.Where(f => f.Students.Contains(student)).FirstOrDefault();
 
-            flow.RemoveStudent(student);
-            student.RemoveFlow(flow);
-            return;
-        }
+        if (flow is null)
+            throw new StudentException("student is not assigned to that course");
 
-        throw new StudentNotAssignedException();
+        flow.RemoveStudent(student);
+        student.RemoveFlow(flow);
     }
 
-    public bool HasStudent(Student student)
+    public bool HasStudent(StudentExtra student)
     {
         return Students.Contains(student);
     }

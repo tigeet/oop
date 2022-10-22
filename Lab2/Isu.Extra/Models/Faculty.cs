@@ -5,7 +5,7 @@ public class Faculty
     public Faculty(char letter)
     {
         Letter = letter;
-        Name = "map letter to faculty"; // map
+        Name = letter.ToString();
     }
 
     public string Name { get; }
