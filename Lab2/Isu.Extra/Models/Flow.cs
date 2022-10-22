@@ -1,10 +1,11 @@
+using Isu.Exceptions;
 using Isu.Extra.Entities;
 using Isu.Extra.Exceptions;
 
 namespace Isu.Extra.Models;
 public class Flow
 {
-    private List<Student> _students = new List<Student>();
+    private List<StudentExtra> _students = new List<StudentExtra>();
     private List<TimeInterval> _intervals = new List<TimeInterval>();
 
     public Flow()
@@ -12,16 +13,16 @@ public class Flow
         MaxCapacity = 20;
     }
 
-    public List<Student> Students
+    public IReadOnlyCollection<StudentExtra> Students
     {
         get
         {
-            return new List<Student>(_students);
+            return _students;
         }
     }
 
     public int MaxCapacity { get; }
-    public List<TimeInterval> Intervals { get { return new List<TimeInterval>(_intervals); } }
+    public IReadOnlyCollection<TimeInterval> Intervals { get { return _intervals; } }
 
     public bool IsFull
     {
@@ -31,10 +32,10 @@ public class Flow
         }
     }
 
-    public void AddStudent(Student student)
+    public void AddStudent(StudentExtra student)
     {
         if (_students.Count == MaxCapacity)
-            throw new FlowOverflowException();
+            throw new GroupOverflowException();
 
         if (_students.Contains(student))
             throw new StudentAlreadyInGroupException();
@@ -42,7 +43,7 @@ public class Flow
         _students.Add(student);
     }
 
-    public void RemoveStudent(Student student)
+    public void RemoveStudent(StudentExtra student)
     {
         if (!_students.Contains(student))
             throw new StudentNotInTheGroupException();
