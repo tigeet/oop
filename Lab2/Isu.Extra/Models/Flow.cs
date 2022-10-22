@@ -1,6 +1,5 @@
 using Isu.Exceptions;
 using Isu.Extra.Entities;
-using Isu.Extra.Exceptions;
 
 namespace Isu.Extra.Models;
 public class Flow
@@ -54,14 +53,6 @@ public class Flow
     public void AddInterval(params TimeInterval[] intervals)
     {
         _intervals.AddRange(intervals);
-    }
-
-    public void RemoveInterval(TimeInterval interval)
-    {
-        if (!_intervals.Contains(interval))
-            throw new IntervalDoesNotExist();
-
-        _intervals.Remove(interval);
     }
 
     public bool HasCollisions(TimeInterval interval)

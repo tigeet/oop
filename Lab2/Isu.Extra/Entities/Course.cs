@@ -38,7 +38,7 @@ public class Course
     public void RemoveFlow(CourseFlow flow)
     {
         if (!_flows.Contains(flow))
-            throw new FlowDoesNotExistException();
+            throw new FlowException("flow does not exist");
 
         _flows.Remove(flow);
     }
@@ -46,15 +46,15 @@ public class Course
     public void AddStudent(StudentExtra student)
     {
         if (Students.Contains(student))
-            throw new StudentAlreadyAssignedException();
+            throw new StudentException("student is already assigned to that course");
 
         if (student.GroupExtra.Faculty.Letter == Faculty.Letter)
-            throw new SameFacultyException();
+            throw new FacultyException("student facutly matches course faculty");
 
         CourseFlow? flow = _flows.Where(f => !f.HasCollisions(student.GroupExtra)).Where(f => !f.IsFull).FirstOrDefault();
 
         if (flow is null)
-         throw new NoSuitableFlowsException();
+         throw new FlowException("no suitable flow");
 
         flow.AddStudent(student);
         student.AddFlow(flow);
@@ -65,7 +65,7 @@ public class Course
         CourseFlow? flow = _flows.Where(f => f.Students.Contains(student)).FirstOrDefault();
 
         if (flow is null)
-            throw new StudentNotAssignedException();
+            throw new StudentException("student is not assigned to that course");
 
         flow.RemoveStudent(student);
         student.RemoveFlow(flow);

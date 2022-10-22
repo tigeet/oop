@@ -48,8 +48,8 @@ public class IsuTests
 
         course1.RemoveStudent(studentExtra);
         Assert.DoesNotContain(studentExtra, course1.Students);
-        Assert.Throws<SameFacultyException>(() => course3.AddStudent(studentExtra)); // Same faculty
-        Assert.Throws<NoSuitableFlowsException>(() => course2.AddStudent(studentExtra)); // Collision
+        Assert.Throws<FacultyException>(() => course3.AddStudent(studentExtra)); // Same faculty
+        Assert.Throws<FlowException>(() => course2.AddStudent(studentExtra)); // Collision
     }
 
     [Fact]
@@ -99,14 +99,14 @@ public class IsuTests
         StudentExtra student2 = isuServiceExtra.AddStudent(group, "s2");
         StudentExtra student3 = isuServiceExtra.AddStudent(group, "s2");
         StudentExtra student4 = isuServiceExtra.AddStudent(group, "s2");
-        _ = course.AddFlow(new Lesson(new Time(11, 40), new Time(13, 10), group, "t1", 1));
+        course.AddFlow(new Lesson(new Time(11, 40), new Time(13, 10), group, "t1", 1));
         course.AddStudent(student1);
         course.AddStudent(student3);
         var list = new List<StudentExtra>
-    {
-        student2, student4,
-    };
-        Console.WriteLine("students--------------------------", group.Students);
+        {
+            student2, student4,
+        };
+
         Assert.Equal(list, group.NotAssigned);
     }
 }

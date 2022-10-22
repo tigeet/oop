@@ -27,13 +27,13 @@ public class StudentExtra
     public void AddFlow(CourseFlow flow)
     {
         if (_courses.Contains(flow))
-            throw new StudentAlreadyAssignedException();
+            throw new StudentException("student is already assigned");
 
         if (_courses.Count == 2)
-            throw new TooManyFlowsException();
+            throw new FlowException("cant assign student to too many flows(max = 2)");
 
         if (GroupExtra.Faculty.Letter == flow.Course.Faculty.Letter)
-            throw new SameFacultyException();
+            throw new FacultyException("students facutly matches course faculty");
 
         _courses.Add(flow);
     }
@@ -41,7 +41,7 @@ public class StudentExtra
     public void RemoveFlow(CourseFlow flow)
     {
         if (!_courses.Contains(flow))
-            throw new StudentNotAssignedException();
+            throw new StudentException("student not assigned to that course");
 
         _courses.Remove(flow);
     }
