@@ -2,13 +2,20 @@
 using Backups.Models.Archivator;
 using Backups.Models.Repository;
 using Backups.Models.StorageAlgorithm;
-using Xunit;
-
 namespace Backups.Tests;
-public class Entrance
+public static class Program
 {
-    [Theory]
-    public void A(string path, string filepath1, string filepath2)
+    public static void Main()
+    {
+        string path = "D:\\Desktop\\test1\\\\";
+        string file1 = "2a9ace3e4304589aa94bf90d85408004.jpg";
+        string file2 = "ce4f153d074ab0b301a45e121a8e2ef3.jpg";
+
+        A(path, file1, file2);
+        B(path, file1, file2);
+    }
+
+    public static void A(string path, string filepath1, string filepath2)
     {
         var file1 = new FileInfo(path + filepath1);
         var file2 = new FileInfo(path + filepath2);
@@ -16,7 +23,7 @@ public class Entrance
         var backupObject1 = new BackupObject(file1);
         var backupObject2 = new BackupObject(file2);
 
-        var repository = new FileSystemRepository(path);
+        var repository = new FileSystemRepository();
 
         var splitStorageAlgo = new SplitStorageAlgorithm();
         var zipArchivator = new ZipArchivator();
@@ -30,8 +37,7 @@ public class Entrance
         backupTask.Commit();
     }
 
-    [Theory]
-    public void B(string path, string filepath1, string filepath2)
+    public static void B(string path, string filepath1, string filepath2)
     {
         var file1 = new FileInfo(path + filepath1);
         var file2 = new FileInfo(path + filepath2);
@@ -39,7 +45,7 @@ public class Entrance
         var backupObject1 = new BackupObject(file1);
         var backupObject2 = new BackupObject(file2);
 
-        var repository = new FileSystemRepository(path);
+        var repository = new FileSystemRepository();
 
         var singleStorageAlgorithm = new SingleStorageAlgorithm();
         var zipArchivator = new ZipArchivator();

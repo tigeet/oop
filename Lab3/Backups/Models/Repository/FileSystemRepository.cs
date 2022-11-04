@@ -2,14 +2,6 @@
 namespace Backups.Models.Repository;
 public class FileSystemRepository : IRepository
 {
-    public FileSystemRepository(string path)
-        : base()
-    {
-        Path = path;
-    }
-
-    public string Path { get; }
-
     public void MakeDirectory(string path, string name)
     {
         try

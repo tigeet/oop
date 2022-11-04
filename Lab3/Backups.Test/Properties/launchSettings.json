@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Backups.Test": {
+      "commandName": "Project"
+    },
+    "Профиль 1": {
+      "commandName": "Executable",
+      "executablePath": "D:\\Desktop\\oop\\Lab3\\Backups\\bin\\Debug\\net6.0\\Backups.exe"
+    }
+  }
+}
