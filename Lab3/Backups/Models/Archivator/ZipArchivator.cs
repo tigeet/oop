@@ -1,61 +1,61 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using Backups.Exceptions;
 using Backups.Models.Repository;
+using Backups.Models.RepositoryObject;
+
 namespace Backups.Models.Archivator;
 public class ZipArchivator : IArchivator
 {
-    public string CreateArchive(string path, string name)
+    public string CreateArchive(string createAt, string archiveName)
     {
-        var memoryStream = new MemoryStream();
-        var fileStream = new FileStream(path + "\\" + name + ".zip", FileMode.Create);
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        memoryStream.CopyTo(fileStream);
+        var archPath = $"{createAt}/{archiveName}.zip";  // TODO: Path.Concat
 
-        fileStream.Close();
-        memoryStream.Close();
-        return path + "\\" + name + ".zip";
-    }
-
-    public void Write(string path, List<Storage> storages, IRepository repository)
-    {
-        storages.ForEach(storage =>
+        using (var memoryStream = new MemoryStream())
         {
-            string archivePath = CreateArchive(path, storage.Id.ToString());
-            Write(archivePath, storage, repository);
-        });
-    }
-
-    public void Write(string path, Storage storage, IRepository repository)
-    {
-        storage.BackupObjects.ForEach(backupObject => Write(path, backupObject, repository));
-    }
-
-    private void Write(string archivePath, BackupObject backupObject, IRepository repository)
-    {
-       try
-        {
-            using (var zipToOpen = new FileStream(archivePath, FileMode.Open))
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
             {
-                using (var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
-                {
-                    string filename = backupObject.File.Name + (backupObject.IsDirectory ? "/" : string.Empty);
-                    ZipArchiveEntry readmeEntry = archive.CreateEntry(filename);
+            }
 
-                    if (backupObject.IsDirectory)
-                        return;
-
-                    using (var writer = new BinaryWriter(readmeEntry.Open()))
-                    {
-                        byte[] content = repository.ReadBytes(backupObject.File.FullName);
-                        writer.Write(content);
-                    }
-                }
+            using (var fileStream = new FileStream(archPath, FileMode.Create))
+            {
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                memoryStream.CopyTo(fileStream);
             }
         }
-        catch
+
+        return archPath;
+    }
+
+    public void WriteFileToArchive(string writeTo, RepositoryObject.File fileToWrite, string relativePath, IRepository repository)
+    {
+        using (FileStream zipToOpen = new FileStream(writeTo, FileMode.Open))
         {
-            throw new MemoryException("Failed to write to zip archive");
+            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+            {
+                var entryPath = relativePath + "/" + fileToWrite.ObjectInfo.Name;
+                ZipArchiveEntry readmeEntry = archive.CreateEntry(entryPath);  // TODO: Path.Concat
+                var destSource = readmeEntry.Open();
+                var sourceStream = fileToWrite.FileStream;
+                byte[] buffer = new byte[2048];
+                int bytesRead;
+                while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
+                    destSource.Write(buffer, 0, bytesRead);
+                sourceStream.Close();
+                destSource.Close();
+            }
+        }
+    }
+
+    public void WriteFolderToArchive(string writeTo, Folder folderToWrite, string relativePath, IRepository repository)
+    {
+        using (FileStream zipToOpen = new FileStream(writeTo, FileMode.Open))
+        {
+            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+            {
+                ZipArchiveEntry readmeEntry = archive.CreateEntry(relativePath + "/" + folderToWrite.ObjectInfo.Name + "/");   // TODO: Path.Concat
+            }
         }
     }
 }

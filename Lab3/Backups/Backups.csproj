@@ -10,6 +10,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Models\RepositoryObject\" />
+      <None Remove="Models\Storage\" />
+      <None Remove="Models\RepositoryVisitor\" />
+      <None Remove="Utils\" />
+    </ItemGroup>
+    <ItemGroup>
         <None Include="..\..\.editorconfig" />
     </ItemGroup>
 
@@ -21,4 +27,10 @@
       </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Models\RepositoryObject\" />
+      <Folder Include="Models\Storage\" />
+      <Folder Include="Models\RepositoryVisitor\" />
+      <Folder Include="Utils\" />
+    </ItemGroup>
 </Project>

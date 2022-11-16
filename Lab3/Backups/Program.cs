@@ -7,52 +7,46 @@ public static class Program
 {
     public static void Main()
     {
-        string path = "D:\\Desktop\\test1\\\\";
-        string file1 = "2a9ace3e4304589aa94bf90d85408004.jpg";
-        string file2 = "ce4f153d074ab0b301a45e121a8e2ef3.jpg";
+        string path = "/Users/koido/Desktop/source/";
+        string file2 = path + "photo2.jpg";
+        string file1 = path + "photo1.jpeg";
+        string folder1 = path + "folder/";
 
-        A(path, file1, file2);
-        B(path, file1, file2);
+        // A(path, file1, file2, folder1);
+        B(path, file1, file2, folder1);
     }
 
-    public static void A(string path, string filepath1, string filepath2)
+    private static void A(string path, string filepath1, string filepath2, string folder1)
     {
-        var file1 = new FileInfo(path + filepath1);
-        var file2 = new FileInfo(path + filepath2);
-
-        var backupObject1 = new BackupObject(file1);
-        var backupObject2 = new BackupObject(file2);
-
+        string mountAt = "/Users/koido/Desktop/backup/";
+        var storageAlgorithm = new SingleStorageAlgorithm();
         var repository = new FileSystemRepository();
+        var archivator = new ZipArchivator();
+        var backupTask = new BackupTask(mountAt, "backupname", repository, storageAlgorithm, archivator);
 
-        var splitStorageAlgo = new SplitStorageAlgorithm();
-        var zipArchivator = new ZipArchivator();
-        var backupTask = new BackupTask(path, "rep1", repository, splitStorageAlgo, zipArchivator);
+        var backupObj1 = backupTask.Add(filepath1);
+        var backupObj2 = backupTask.Add(filepath2);
+        var backupObj3 = backupTask.Add(folder1);
 
-        backupTask.Add(backupObject1);
-        backupTask.Add(backupObject2);
         backupTask.Commit();
 
-        backupTask.Rm(backupObject2);
+        backupTask.Rm(backupObj1);
+        backupTask.Rm(backupObj3);
         backupTask.Commit();
     }
 
-    public static void B(string path, string filepath1, string filepath2)
+    private static void B(string path, string filepath1, string filepath2, string folder1)
     {
-        var file1 = new FileInfo(path + filepath1);
-        var file2 = new FileInfo(path + filepath2);
-
-        var backupObject1 = new BackupObject(file1);
-        var backupObject2 = new BackupObject(file2);
-
+        string mountAt = "/Users/koido/Desktop/backup/";
+        var storageAlgorithm = new SplitStorageAlgorithm();
         var repository = new FileSystemRepository();
+        var archivator = new ZipArchivator();
+        var backupTask = new BackupTask(mountAt, "backupname", repository, storageAlgorithm, archivator);
 
-        var singleStorageAlgorithm = new SingleStorageAlgorithm();
-        var zipArchivator = new ZipArchivator();
-        var backupTask = new BackupTask(path, "rep2", repository, singleStorageAlgorithm, zipArchivator);
+        backupTask.Add(filepath1);
+        backupTask.Add(filepath2);
+        backupTask.Add(folder1);
 
-        backupTask.Add(backupObject1);
-        backupTask.Add(backupObject2);
         backupTask.Commit();
     }
 }

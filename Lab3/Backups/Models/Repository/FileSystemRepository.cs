@@ -1,64 +1,38 @@
-﻿using Backups.Exceptions;
+﻿using System;
+using System.IO;
+using Backups.Exceptions;
+using Backups.Models.RepositoryObject;
+using File = Backups.Models.RepositoryObject.File;
+
 namespace Backups.Models.Repository;
 public class FileSystemRepository : IRepository
 {
-    public void MakeDirectory(string path, string name)
+    public Guid Id { get; }
+    public IRepositoryObject CreateRepositoryObject(string objectPath)
     {
-        try
-        {
-        Directory.CreateDirectory(path + "\\" + name + "\\");
-        }
-        catch
-        {
-            throw new MemoryException("Failed to create a file");
-        }
+        FileAttributes attr = System.IO.File.GetAttributes(objectPath);
+
+        if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            return new Folder(new DirectoryInfo(objectPath), this);
+
+        return new File(new FileInfo(objectPath), this);
     }
 
-    public void MakeFile(string path, string name)
+    public FileStream OpenFileStream(FileInfo getFrom)
     {
-        try
-        {
-            File.Create(path + "\\" + name);
-        }
-        catch
-        {
-            throw new MemoryException("Failed to create a file");
-        }
+        return System.IO.File.OpenRead(getFrom.FullName);
     }
 
-    public byte[] ReadBytes(string path)
+    public void CloseFileStream(FileStream fileStream)
     {
-        try
-        {
-            return File.ReadAllBytes(path);
-        }
-        catch
-        {
-            throw new MemoryException("Failed to read bytes from a file");
-        }
+        fileStream.Close();
     }
 
-    public void Write(string path, string content)
+    public List<IRepositoryObject> ListObjects(string listFrom)
     {
-        try
-        {
-            File.WriteAllText(path, content);
-    }
-        catch
-        {
-            throw new MemoryException("Failed to write to a file");
-}
-    }
-
-    public void WriteBytes(string path, byte[] bytes)
-    {
-        try
-        {
-            File.WriteAllBytes(path, bytes);
-    }
-        catch
-        {
-            throw new MemoryException("Failed to write bytes to a file");
-}
+        var filePathes = Directory.GetDirectories(listFrom, "*", SearchOption.TopDirectoryOnly);
+        var folderPathes = Directory.GetFiles(listFrom, "*", SearchOption.TopDirectoryOnly);
+        var combinedPathes = filePathes.Concat(folderPathes);
+        return combinedPathes.Select(path => CreateRepositoryObject(path)).ToList();
     }
 }
