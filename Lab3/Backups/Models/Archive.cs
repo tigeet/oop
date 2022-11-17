@@ -14,7 +14,7 @@ public class Archive
     public string PathToArchive { get; }
     public string Name { get; }
     public List<IRepositoryObject> RepositoryObjects { get { return _objects.Select(obj => obj.RepositoryObject).ToList(); } }
-    public List<ArchiveObject> ArchiveObjects { get { return _objects; } }
+    public List<ArchiveObject> ArchiveObjects { get { return new List<ArchiveObject>(_objects); } }
     public void Add(List<ArchiveObject> objectsToAdd)
     {
         _objects.AddRange(objectsToAdd);

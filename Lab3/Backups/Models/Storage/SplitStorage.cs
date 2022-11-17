@@ -11,7 +11,7 @@ public class SplitStorage : IStorage
     }
 
     public string StorageName { get; }
-    public List<Archive> Archives { get { return _archives; } }
+    public List<Archive> Archives { get { return new List<Archive>(_archives); } }
 
     public List<IRepositoryObject> RepositoryObjects
     {

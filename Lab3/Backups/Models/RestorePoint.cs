@@ -13,5 +13,5 @@ public class RestorePoint
 
     public DateTime DateCreated { get; }
     public IStorage Storage { get; }
-    public List<BackupObject> BackupObjects { get { return _backupObjects; } }
+    public List<BackupObject> BackupObjects { get { return new List<BackupObject>(_backupObjects); } }
 }

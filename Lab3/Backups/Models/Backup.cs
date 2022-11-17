@@ -5,7 +5,7 @@ public class Backup
 
     public Backup(BackupTask backupTask) { BackupTask = backupTask; }
     public BackupTask BackupTask { get; }
-    public List<RestorePoint> RestorePoints { get { return _restorePoints; } }
+    public List<RestorePoint> RestorePoints { get { return new List<RestorePoint>(_restorePoints); } }
 
     public RestorePoint AddRestorePoint(RestorePoint restorePoint)
     {
