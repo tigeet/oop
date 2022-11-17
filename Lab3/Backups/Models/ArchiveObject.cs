@@ -8,7 +8,7 @@ public class ArchiveObject
     public ArchiveObject(IRepositoryObject repositoryObject)
     {
         RepositoryObject = repositoryObject;
-        Name = repositoryObject.ObjectInfo.Name;
+        Name = repositoryObject.Name;
     }
 
     public IRepositoryObject RepositoryObject { get; }

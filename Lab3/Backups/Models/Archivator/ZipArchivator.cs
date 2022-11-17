@@ -8,16 +8,12 @@ using Backups.Models.RepositoryObject;
 namespace Backups.Models.Archivator;
 public class ZipArchivator : IArchivator
 {
-    public string CreateArchive(string createAt, string archiveName)
+    public Archive CreateArchive(string createAt)
     {
-        var archPath = $"{createAt}/{archiveName}.zip";  // TODO: Path.Concat
-
+        string archName = $"{Utils.Utils.RandomString(8)}.zip";
+        string archPath = Path.Combine(createAt, archName);
         using (var memoryStream = new MemoryStream())
         {
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-            {
-            }
-
             using (var fileStream = new FileStream(archPath, FileMode.Create))
             {
                 memoryStream.Seek(0, SeekOrigin.Begin);
@@ -25,17 +21,17 @@ public class ZipArchivator : IArchivator
             }
         }
 
-        return archPath;
+        return new Archive(name: archName, locatedAt: createAt);
     }
 
-    public void WriteFileToArchive(string writeTo, RepositoryObject.File fileToWrite, string relativePath, IRepository repository)
+    public void WriteFileToArchive(string writeTo, RepositoryObject.IFile fileToWrite, string relativePath, IRepository repository)
     {
         using (FileStream zipToOpen = new FileStream(writeTo, FileMode.Open))
         {
             using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
             {
-                var entryPath = relativePath + "/" + fileToWrite.ObjectInfo.Name;
-                ZipArchiveEntry readmeEntry = archive.CreateEntry(entryPath);  // TODO: Path.Concat
+                var entryPath = Path.Combine(relativePath, fileToWrite.Name);
+                ZipArchiveEntry readmeEntry = archive.CreateEntry(entryPath);
                 var destSource = readmeEntry.Open();
                 var sourceStream = fileToWrite.FileStream;
                 byte[] buffer = new byte[2048];
@@ -48,13 +44,14 @@ public class ZipArchivator : IArchivator
         }
     }
 
-    public void WriteFolderToArchive(string writeTo, Folder folderToWrite, string relativePath, IRepository repository)
+    public void WriteFolderToArchive(string writeTo, IFolder folderToWrite, string relativePath, IRepository repository)
     {
         using (FileStream zipToOpen = new FileStream(writeTo, FileMode.Open))
         {
             using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
             {
-                ZipArchiveEntry readmeEntry = archive.CreateEntry(relativePath + "/" + folderToWrite.ObjectInfo.Name + "/");   // TODO: Path.Concat
+                string entryPath = Path.Combine(relativePath, folderToWrite.Name, Path.DirectorySeparatorChar.ToString());
+                ZipArchiveEntry readmeEntry = archive.CreateEntry(entryPath);
             }
         }
     }

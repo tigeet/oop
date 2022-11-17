@@ -18,9 +18,10 @@ public class FileSystemRepository : IRepository
         return new File(new FileInfo(objectPath), this);
     }
 
-    public FileStream OpenFileStream(FileInfo getFrom)
+    public FileStream OpenFileStream(string getFrom)
     {
-        return System.IO.File.OpenRead(getFrom.FullName);
+        var fileinfo = new FileInfo(getFrom);
+        return System.IO.File.OpenRead(fileinfo.FullName);
     }
 
     public void CloseFileStream(FileStream fileStream)
@@ -34,5 +35,12 @@ public class FileSystemRepository : IRepository
         var folderPathes = Directory.GetFiles(listFrom, "*", SearchOption.TopDirectoryOnly);
         var combinedPathes = filePathes.Concat(folderPathes);
         return combinedPathes.Select(path => CreateRepositoryObject(path)).ToList();
+    }
+
+    public string CreateDirectory(string makeAt, string folderName)
+    {
+        var dirPath = Path.Combine(makeAt, folderName);
+        Directory.CreateDirectory(dirPath);
+        return dirPath;
     }
 }

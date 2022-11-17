@@ -8,15 +8,18 @@ public class SingleStorageAlgorithm : IStorageAlgorithm
 {
     public IStorage Commit(IRepository repository, IArchivator archivator, string writeTo, List<BackupObject> objectsToSave)
     {
-        var archiveName = Utils.Utils.RandomString(8);
-        var archivePath = archivator.CreateArchive(writeTo, archiveName);
+        SingleStorage storage = new SingleStorage();
+        var storagePath = storage.CreateStorage(repository, writeTo);
 
-        var visitor = new RepositoryObjectVisitor(archivePath, archivator, repository);
-        objectsToSave.ForEach(obj => obj.RepositoryObject.Accept(visitor, string.Empty));
+        Archive archive = archivator.CreateArchive(createAt: storagePath);
+        var archivePath = archive.PathToArchive;
+
+        var objectsToVisit = objectsToSave.Select(obj => obj.RepositoryObject).ToList();
+        var visitor = new RepositoryObjectVisitor(archivePath, archivator, repository, objectsToVisit);
 
         var archiveObjects = objectsToSave.Select(obj => new ArchiveObject(obj.RepositoryObject)).ToList();
-        Archive archive = new Archive(new FileInfo(archivePath), archiveObjects);
-
-        return new SingleStorage(archive);
+        archive.Add(archiveObjects);
+        storage.Archive = archive;
+        return storage;
     }
 }

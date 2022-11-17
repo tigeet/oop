@@ -2,14 +2,21 @@
 namespace Backups.Models;
 public class Archive
 {
-    private List<ArchiveObject> _objects;
-    public Archive(FileInfo archiveInfo, List<ArchiveObject> archiveObjects)
+    private List<ArchiveObject> _objects = new List<ArchiveObject>();
+    public Archive(string name, string locatedAt)
     {
-        ArchiveInfo = archiveInfo;
-        _objects = new List<Models.ArchiveObject>(archiveObjects);
+        Name = name;
+        LocatedAt = locatedAt;
+        PathToArchive = Path.Combine(locatedAt, name);
     }
 
-    public FileInfo ArchiveInfo { get; }
+    public string LocatedAt { get; }
+    public string PathToArchive { get; }
+    public string Name { get; }
     public List<IRepositoryObject> RepositoryObjects { get { return _objects.Select(obj => obj.RepositoryObject).ToList(); } }
     public List<ArchiveObject> ArchiveObjects { get { return _objects; } }
+    public void Add(List<ArchiveObject> objectsToAdd)
+    {
+        _objects.AddRange(objectsToAdd);
+    }
 }

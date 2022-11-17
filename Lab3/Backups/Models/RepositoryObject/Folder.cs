@@ -2,22 +2,26 @@
 using Backups.Models.Repository;
 
 namespace Backups.Models.RepositoryObject;
-public class Folder : IRepositoryObject
+public class Folder : IFolder
 {
+    private DirectoryInfo _objectInfo;
     public Folder(DirectoryInfo directoryInfo, IRepository repository)
     {
-        ObjectInfo = directoryInfo;
+        _objectInfo = directoryInfo;
         Repository = repository;
+        Name = directoryInfo.Name;
+        OriginalPath = directoryInfo.FullName;
     }
 
-    public FileSystemInfo ObjectInfo { get; }
     public IRepository Repository { get; }
-
-    // public List<IRepositoryObject> Objects { get { return Repository.ListObjects(ObjectInfo.FullName); } }
     public Func<List<IRepositoryObject>> Objects
     {
-        get { return () => Repository.ListObjects(ObjectInfo.FullName); }
+        get { return () => Repository.ListObjects(_objectInfo.FullName); }
     }
+
+    public string Name { get; }
+
+    public string OriginalPath { get; }
 
     public void Accept(RepositoryObjectVisitor visitor, string writeTo)
     {

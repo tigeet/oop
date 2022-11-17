@@ -7,35 +7,34 @@ namespace Backups.Models;
 public class BackupTask
 {
     private List<BackupObject> _trackedObjects = new List<BackupObject>();
-    private List<BackupObject> _backupObjects = new List<BackupObject>();
+
     public BackupTask(string mountTo, string taskName, IRepository repository, IStorageAlgorithm storageAlgorithm, IArchivator archivator)
     {
-        StorageAlgorithm = storageAlgorithm;
         TaskName = taskName;
-        Repository = repository;
-        Id = Guid.NewGuid();
         MountedAt = mountTo;
+
+        StorageAlgorithm = storageAlgorithm;
+        Repository = repository;
         Archivator = archivator;
-        Backup = new Backup();
+        Backup = new Backup(this);
     }
 
+    public string MountedAt { get; }
+    public string TaskName { get; }
+    public Backup Backup { get; }
+
     private IArchivator Archivator { get; }
-    private string MountedAt { get; }
-    private string TaskName { get; }
-    private Guid Id { get; set; }
     private IRepository Repository { get; }
     private IStorageAlgorithm StorageAlgorithm { get; }
-    private Backup Backup { get; }
 
     public BackupObject Add(string filePath)
     {
         var repositoryObject = Repository.CreateRepositoryObject(filePath);
-        var backupObject = new BackupObject(repositoryObject.ObjectInfo, Repository);
+        var backupObject = new BackupObject(repositoryObject);
 
         if (_trackedObjects.Contains(backupObject))
             throw new TrackedException("Object is already being tracked");
 
-        _backupObjects.Add(backupObject);
         _trackedObjects.Add(backupObject);
 
         return backupObject;

@@ -1,14 +1,16 @@
 ﻿using System;
+using Backups.Models.Repository;
 
 namespace Backups.Models.Storage;
 public class SplitStorage : IStorage
 {
-    private List<Archive> _archives;
-    public SplitStorage(List<Archive> archives)
+    private List<Archive> _archives = new List<Archive>();
+    public SplitStorage()
     {
-        _archives = archives;
+        StorageName = Utils.Utils.RandomString(8);
     }
 
+    public string StorageName { get; }
     public List<Archive> Archives { get { return _archives; } }
 
     public List<IRepositoryObject> RepositoryObjects
@@ -17,5 +19,15 @@ public class SplitStorage : IStorage
         {
             return _archives.SelectMany(archive => archive.RepositoryObjects).ToList();
         }
+    }
+
+    public void Add(List<Archive> archives)
+    {
+        _archives.AddRange(archives);
+    }
+
+    public string CreateStorage(IRepository repository, string createAt)
+    {
+        return repository.CreateDirectory(createAt, StorageName);
     }
 }

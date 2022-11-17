@@ -7,24 +7,30 @@ using File = Backups.Models.RepositoryObject.File;
 namespace Backups.Models;
 public class RepositoryObjectVisitor
 {
-    public RepositoryObjectVisitor(string archPath, IArchivator archivator, IRepository repository)
+    public RepositoryObjectVisitor(string archPath, IArchivator archivator, IRepository repository, List<IRepositoryObject> objectsToVisit)
     {
         ArchivePath = archPath;
         Archivator = archivator;
         Repository = repository;
+        objectsToVisit.ForEach(obj => obj.Accept(this, string.Empty));
     }
 
     private IRepository Repository { get; }
     private IArchivator Archivator { get; }
     private string ArchivePath { get; }
-    public void VisitFile(File file, string writeTo)
+
+    public void VisitFile(IFile file, string writeTo)
     {
         Archivator.WriteFileToArchive(ArchivePath, file, writeTo, Repository);
     }
 
-    public void VisitFolder(Folder folder, string writeTo)
+    public void VisitFolder(IFolder folder, string writeTo)
     {
         Archivator.WriteFolderToArchive(ArchivePath, folder, writeTo, Repository);
-        folder.Objects().ForEach(obj => obj.Accept(this, writeTo + "/" + folder.ObjectInfo.Name));  // TODO: Path.Concat
+        folder.Objects().ForEach(obj =>
+        {
+            string pathToObj = Path.Combine(writeTo, folder.Name);
+            obj.Accept(this, pathToObj);
+        });
     }
 }

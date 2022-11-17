@@ -12,7 +12,7 @@ public static class Program
         string file1 = path + "photo1.jpeg";
         string folder1 = path + "folder/";
 
-        // A(path, file1, file2, folder1);
+        A(path, file1, file2, folder1);
         B(path, file1, file2, folder1);
     }
 
@@ -28,10 +28,6 @@ public static class Program
         var backupObj2 = backupTask.Add(filepath2);
         var backupObj3 = backupTask.Add(folder1);
 
-        backupTask.Commit();
-
-        backupTask.Rm(backupObj1);
-        backupTask.Rm(backupObj3);
         backupTask.Commit();
     }
 
